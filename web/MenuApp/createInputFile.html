@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <body>
+        <form method="POST" action="../CreateFile" onsubmit="return validateFile()">
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Scriere fisier</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input onContextMenu="return false" type="text" class="form-control" placeholder="Numele fisierului.txt" name="fileName" id="fileName" onchange="return validateFile()"/>
+                            <br/>
+                            <div class="alert alert-info" role="alert">
+                                La citire fisierul se gaseste la calea: Conturi/username/file.txt
+                            </div>
+
+                            <div class="alert alert-danger" role="alert" id="fileId" style="display: none">
+                                Introduceti numele fisierului
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <label for="continut" style="float:left">Input</label><br/>
+                            <textarea onContextMenu="return false" class="form-control" rows="5" id="continut" name="continut"></textarea>
+                        </div>
+                        <div class="alert alert-info" role="alert">
+                            Daca doriti sa afisati in fisier, indicat ar fi sa-l creati mai intai aici: 
+                                Conturi/username/file.txt gol
+                        </div>
+                        <div class="modal-footer">
+                            <center><button type="submit" class="btn btn-info" 
+                                            data-toggle="tooltip" data-placement="bottom" title="Creeaza">Creeaza</button></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </body>
+    <script type="text/javascript">
+        var fileName = document.getElementById("fileName");
+        var erFile = document.getElementById("fileId");
+        var continut = document.getElementById("continut");
+        fileName.value = "";
+        continut.value = "";
+        erFile.style.display = "none";
+    </script>
+</html>

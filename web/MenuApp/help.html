@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <style>
+            .popover-content {
+                background-color: #0099EE;
+                color: #FFFFFF;
+            }
+            #popup {
+                float: right;
+                width: 10%;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="container" id="popup">
+            <button class="btn btn-info" id="btnInfo" data-toggle="popover" title="Indicatii" data-html="true" data-placement="left" 
+                    data-content="In cadrul acestei pagini poti scrie cod, avand urmatoarele optiuni: <br/>
+                    1) Sa rulezi cod si sa primesti raspunsul (eroare sau succes) <br/>
+                    2) Sa-ti creezi propriul fisier pentru citire si sa-l gestionezi <br/>
+                    3) In cazul unui loop inifinit se recomanda apasarea butonului: Stop Process si analizarea codului <br/>
+                    4) Prin apasarea ctrl+space vor aparea recomandari de cod <br/>
+                    5) Nu se poate utiliza ctrl-paste din alta zona decat cea a codului <br/>
+                    6) Se poate selecta una din cele doua teme: Light/Dark">
+                Ajutor
+            </button>
+        </div>
+        <script>
+            $('[data-toggle="popover"]').popover();
+            function btnRunInfoClick() {
+                var popover = document.getElementById("btnInfo");
+                popover.setAttribute("data-content", "Daca raspunsul dureaza prea mult, e posibil ca programul sa ruleze la infinit. </br>Apsati Stop Process si verificati codul.");
+                setTimeout(function () {
+                    popover.click();
+                }, 700);
+            }
+        </script>
+    </body>
+</html>
