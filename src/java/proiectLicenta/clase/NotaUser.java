@@ -5,6 +5,7 @@ public class NotaUser {
     private int notaAplicatie;
     private int notaProfesor;
     private int userId;
+    private String denumireTest;
 
     public int getNotaAplicatie() {
         return notaAplicatie;
@@ -30,6 +31,12 @@ public class NotaUser {
         this.userId = userId;
     }
 
-    
+    public String getDenumireTest() {
+        return denumireTest;
+    }
+
+    public void setDenumireTest(String denumireTest) {
+        this.denumireTest = denumireTest;
+    }
     
 }
