@@ -13,21 +13,14 @@
 
 <br>
 <%
+    String userName = request.getParameter("uname");
+    
+    String pwd = request.getParameter("password");
+    UserDAO userDAO = null;
+    User user = null;
     try {
-        String userName = request.getParameter("uname");
-        String pwd = request.getParameter("password");
-        UserDAO userDAO = null;
-        User user = null;
-        try {
-            userDAO = new UserDAO();
-            user = userDAO.getUserByUname(userName.toLowerCase());
-        } catch (Exception ex) {
-            out.println(ex.toString());
-        } finally {
-            if (userDAO != null) {
-                userDAO.closeConnection();
-            }
-        }
+        userDAO = new UserDAO();
+        user = userDAO.getUserByUname(userName.toLowerCase());
         if (user != null && user.getParola().equals(pwd)) {
             int id = user.getId();
             session.setAttribute("userid", id);
@@ -51,8 +44,11 @@
             response.sendRedirect("../index.jsp");
         }
     } catch (Exception ex) {
-        System.out.println(ex.toString());
-        out.println("<center><span color=\"red\">Ne pare rau, dar am intampinat o eroare!</span></center>");
+        out.println(ex.toString());
+    } finally {
+        if (userDAO != null) {
+            userDAO.closeConnection();
+        }
     }
 %>
 

@@ -26,7 +26,9 @@
             <a href='SituatieStudenti.jsp'>Situatie studenti</a>
         </li>
         <% }%>
-
+        <li>
+            <a href='IntroducereTest.jsp'>Inserare noua problema</a>
+        </li>
         <li>
             <a href='logout.jsp'>Iesire</a>
         </li>

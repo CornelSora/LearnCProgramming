@@ -8,19 +8,23 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class NotaUserDAO {
+public class SubiectDAO {
 
     private Statement st;
     private BazaDeDate bd;
 
-    public NotaUserDAO() throws SQLException {
+    public SubiectDAO() {
         if (bd == null) {
-            bd = BazaDeDate.getInstance();
-            bd.openConnection();
+            try {
+                bd = BazaDeDate.getInstance();
+                bd.openConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(SubiectDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
-    public synchronized List<NotaUser> extragereNote() {
+    public synchronized List<NotaUser> extragereSubiecte() {
         List<NotaUser> noteStudenti = new ArrayList<>();
         try {
             st = bd.getStatement();
@@ -46,29 +50,38 @@ public class NotaUserDAO {
         return noteStudenti;
     }
 
-    public synchronized int inserareNotaProfesor(int idUser, int nota_profesor, String denumire_test) {
-        int i = -1;
+    public synchronized void inserareSubiect(Subiect subiect) {
         try {
             st = bd.getStatement();
-            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + idUser;
-
-            ResultSet rs = st.executeQuery(selectCommand);
-
+            String selectMaxIdCommand = "SELECT max(IDPROBLEMA) FROM PROBLEMA";
+            int id = 1;
+            ResultSet rs = st.executeQuery(selectMaxIdCommand);
             if (rs.next()) {
-                String updateCommand = "UPDATE NOTA SET nota_profesor=" + nota_profesor + " WHERE iduser=" + idUser;
-                st.executeUpdate(updateCommand);
-            } else {
-                String insertCommand = "INSERT INTO NOTA(nota_profesor, denumire_test) VALUES ("
-                        + nota_profesor + ",'" + denumire_test + "'" + ")";
-                st.executeUpdate(insertCommand);
+                id = rs.getInt(1) + 1;
+            }
+            String insertProblemaCommand = "INSERT INTO PROBLEMA(IDPROBLEMA, DENUMIRE, CERINTA) VALUES ("
+                    + id + ",'" + subiect.getDenumireSubiect() + "','" + subiect.getCerintaSubiect() + "'" + ")";
+            st.executeUpdate(insertProblemaCommand);
+            String insertFunctieCommand;
+
+            for (Functie functie : subiect.getFunctii()) {
+                insertFunctieCommand = "INSERT INTO FUNCTIE(IDPROBLEMA, DENUMIRE, TIPRETURNAT) VALUES ("
+                        + id + ",'" + functie.getDenumire() + "','" + functie.getTipReturnat() + "'" + ")";
+                st.executeUpdate(insertFunctieCommand);
             }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(NotaUserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            String insertVerificareCommand;
+            for (VerificareRezultat verificare : subiect.getVerificari()) {
+                insertVerificareCommand = "INSERT INTO VERIFICARI(IDPROBLEMA, INPUTTEXT, OUTPUTTEXT) VALUES ("
+                        + id + ",'" + verificare.getInput() + "','" + verificare.getOutput() + "'" + ")";
+                st.executeUpdate(insertVerificareCommand);
+            }
+
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         } finally {
             bd.releaseStatement();
         }
-        return i;
     }
 
     public synchronized int inserareNotaAplicatie(int idUser, int nota_aplicatie, String denumire_test) {
@@ -95,8 +108,6 @@ public class NotaUserDAO {
         }
         return i;
     }
-
-    //TO DO: introducere nota, denumire test. inserareNotaProfesor, inserareNotaAplicatie, idUser
 
     public void closeConnection() {
         if (bd != null) {

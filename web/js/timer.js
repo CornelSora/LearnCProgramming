@@ -22,9 +22,9 @@ function setTimer(year, month, day, hours, minutes, seconds) {
         var minutes = Math.floor((distance % _hour) / _minute);
         var seconds = Math.floor((distance % _minute) / _second);
 
-        document.getElementById('countdown').innerHTML += hours + 'hrs ';
-        document.getElementById('countdown').innerHTML += minutes + 'mins ';
-        document.getElementById('countdown').innerHTML += seconds + 'secs';
+        document.getElementById('countdown').value = hours + 'hrs ';
+        document.getElementById('countdown').value += minutes + 'mins ';
+        document.getElementById('countdown').value += seconds + 'secs';
     }
 
     timer = setInterval(showRemaining, 1000);

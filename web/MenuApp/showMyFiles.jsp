@@ -15,6 +15,7 @@
         userPathFile = "Conturi/" + session.getAttribute("userPath").toString();
     }
     List<String> listaFisiere = fileUserDAO.getFilesById(idUser);
+    fileUserDAO.closeConnection();
     Map<String, String> fisiere = new HashMap<>();
     for (int i = 0; i < listaFisiere.size(); i++) {
         File file = null;

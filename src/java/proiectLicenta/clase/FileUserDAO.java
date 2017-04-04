@@ -1,6 +1,5 @@
 package proiectLicenta.clase;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,7 +16,7 @@ public class FileUserDAO {
     public FileUserDAO() {
         try {
             if (bd == null) {
-                bd = new BazaDeDate();
+                bd = BazaDeDate.getInstance();
                 bd.openConnection();
             }
         } catch (SQLException ex) {

@@ -11,22 +11,43 @@ import org.apache.derby.jdbc.ClientDataSource;
 public class BazaDeDate {
 
     private Connection con;
-    private Statement statement;
+    private Statement statement = null;
     private ClientDataSource cs;
     private final String jdbcDriver = "com.mysql.jdbc.Driver";
     private final String dbURL = "jdbc:mysql://localhost/test";
+    private final int portNumber = 1527;
     private final String user = "root";
     private final String password = "123456";
     boolean isStatementFree = true;
+    boolean isConnectionFree = true;
     
-    public BazaDeDate() throws SQLException {
+    private static BazaDeDate instance = null;
+
+    private BazaDeDate() {
+    }
+    
+    public static BazaDeDate getInstance() {
+        if (instance == null) {
+            instance = new BazaDeDate();
+        }
+        return instance;
     }
 
-    public void openConnection() throws SQLException {
+    public synchronized void openConnection() throws SQLException {
+        while (isConnectionFree == false) {
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BazaDeDate.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        isConnectionFree = false;
+        notify();
+        
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             cs = new ClientDataSource();
             cs.setDatabaseName("sample");
-            cs.setPortNumber(1527);
+            cs.setPortNumber(portNumber);
             cs.setServerName("localhost");
             cs.setUser("app");
             cs.setPassword("app");
@@ -68,7 +89,8 @@ public class BazaDeDate {
 
     public void closeConnection() {
         try {
-        con.close();
+            con.close();
+            isConnectionFree = true;
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }

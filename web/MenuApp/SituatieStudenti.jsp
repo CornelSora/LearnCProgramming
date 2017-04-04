@@ -103,6 +103,7 @@
     Map<String, String> fisiere = null;
     if (studentName != null) {
         listaFisiere = fileUserDAO.getFilesById(studentActual.getId());
+        fileUserDAO.closeConnection();
         fisiere = new HashMap<>();
         for (int i = 0; i < listaFisiere.size(); i++) {
             File file = null;

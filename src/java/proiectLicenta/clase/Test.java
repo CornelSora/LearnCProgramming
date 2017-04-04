@@ -20,7 +20,7 @@ public class Test {
 
     public void initIntrebari() throws SQLException {
         intrebari = new ArrayList<>();
-        BazaDeDate bd = new BazaDeDate();
+        BazaDeDate bd = BazaDeDate.getInstance();
         bd.openConnection();
         Statement st = bd.getStatement();
         ResultSet rs;

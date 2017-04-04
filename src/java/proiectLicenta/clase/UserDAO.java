@@ -13,7 +13,7 @@ public class UserDAO {
 
     public UserDAO() throws SQLException {
         if (bd == null) {
-            bd = new BazaDeDate();
+            bd = BazaDeDate.getInstance();
             bd.openConnection();
         }
     }

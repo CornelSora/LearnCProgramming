@@ -153,10 +153,14 @@
             <!-- /#sidebar-wrapper -->
             <button class="btn btn-default" id="menu-toggle" style="background-color: #D0D0D0">
                 <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-            </button>
-            <div id="countdown">
-
+            </button> <br/>
+            <div class="input-group clockpicker" style="float: left; margin-left:2%; width: 20%; margin-top:1%; margin-bottom: 1%;">
+                <input type="text" class="form-control" id="countdown" readonly>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-time"></span>
+                </span>
             </div>
+            
             <% if (session.getAttribute("testStarted") != null) {
                     Calendar calendar = (Calendar) session.getAttribute("testStarted");
                     year = calendar.get(Calendar.YEAR);

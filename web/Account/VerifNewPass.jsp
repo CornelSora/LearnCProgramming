@@ -23,4 +23,5 @@
         userDAO.updateUser(user.getId(), pass);
         response.sendRedirect("succesReg.jsp");
     }
+    userDAO.closeConnection();
 %>
