@@ -1,8 +1,6 @@
-<%-- 
-    Document   : menuBar
-    Created on : Dec 3, 2016, 1:33:04 PM
-    Author     : corne
---%>
+
+<%@page import="proiectLicenta.clase.Subiect"%>
+<%@page import="proiectLicenta.clase.ListaProbleme"%>
 
 <div id="sidebar-wrapper">
     <ul class="sidebar-nav">
@@ -12,22 +10,19 @@
             </a>
         </li>
         <li>
-            <a href="ConsoleRun.jsp?id=0">Test</a>
+            <a href="ConsoleRun.jsp?id=no">Consola</a>
         </li>
+        <%
+            int i = 0;
+            for (Subiect subiect : ListaProbleme.getListaProblemeExercitiu()) {
+                if (!subiect.getDenumireSubiect().toLowerCase().equals("test")) {
+                    out.println("<li><a href='ConsoleRun.jsp?id=" + (i++) + "'>"
+                            + subiect.getDenumireSubiect() + "</a></li>");
+                }
+            }
+        %>
         <li>
-            <a href='ConsoleRun.jsp?id=1'>A+B</a>
-        </li>
-        <li>
-            <a href='ConsoleRun.jsp?id=2'>A*B</a>
-        </li>
-        <li>
-            <a href='ConsoleRun.jsp?id=3'>MAX(A,B)</a>
-        </li>
-        <li>
-            <a href='ConsoleRun.jsp?id=4'>MIN(A,B)</a>
-        </li>
-        <li>
-            <a href='menu.jsp'>Go back</a>
+            <a href='menu.jsp'>Inapoi</a>
         </li>
     </ul>
 </div>

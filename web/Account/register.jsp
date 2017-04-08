@@ -16,6 +16,7 @@
     String parola = request.getParameter("password");
     String email = request.getParameter("email");
     String tipUtil = request.getParameter("tipUtil");
+    String coordonator = request.getParameter("coordonator");
     UserDAO userDAO = null;
     User user = null;
     try {
@@ -29,10 +30,11 @@
             User newUser = new User();
             newUser.setNume(nume);
             newUser.setPrenume(prenume);
-            newUser.setUsername(username);
+            newUser.setUsername(username.toLowerCase());
             newUser.setParola(parola);
             newUser.setEmail(email);
             newUser.setTip(tipUtil);
+            newUser.setProfesor(coordonator);
             int i = userDAO.addUser(newUser);
             if (i > 0) {
                 response.sendRedirect("succesReg.jsp");

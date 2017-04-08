@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import proiectLicenta.clase.CodeTest;
 import proiectLicenta.clase.FileUser;
 import proiectLicenta.clase.FileUserDAO;
 
@@ -19,8 +18,13 @@ public class CreateFile extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        CodeTest codeTest = (CodeTest) session.getAttribute("testCurent");
-        response.sendRedirect("/ProiectLicenta/MenuApp/ConsoleRun.jsp?id=" + codeTest.getId());
+        
+        if (session.getAttribute("id") != null && !session.getAttribute("id").toString().equals("")) {
+            String id = session.getAttribute("id").toString();
+            response.sendRedirect("/ProiectLicenta/MenuApp/ConsoleRun.jsp?id=" + id);
+        } else {
+            response.sendRedirect("/ProiectLicenta/MenuApp/StudentTest.jsp");
+        }
     }
 
     @Override

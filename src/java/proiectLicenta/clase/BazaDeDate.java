@@ -87,6 +87,10 @@ public class BazaDeDate {
         notify();
     }
 
+    public Connection getCon() {
+        return con;
+    }
+    
     public void closeConnection() {
         try {
             con.close();

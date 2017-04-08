@@ -1,20 +1,17 @@
 package proiectLicenta.clase;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Subiect {
 
+    private int id;
     private String denumireSubiect;
     private String cerintaSubiect;
     private List<Functie> functii;
     private List<VerificareRezultat> verificari;
+    private String autor;
 
     public String getDenumireSubiect() {
         return denumireSubiect;
@@ -48,55 +45,56 @@ public class Subiect {
         this.verificari = verificari;
     }
 
-    public String convertFunctiiToString() {
-        StringBuilder functiiBuilder = new StringBuilder();
-        this.functii.forEach((functie) -> {
-            functiiBuilder.append(functie.getDenumire()).append(";")
-                    .append(functie.getTipReturnat()).append(";");
-        });
-        return functiiBuilder.substring(0, functiiBuilder.length() - 1);
+    public int getId() {
+        return id;
     }
 
-    public String convertVerificariToString() {
-        StringBuilder verificariBuilder = new StringBuilder();
-        this.verificari.forEach((verificare) -> {
-            verificariBuilder.append(verificare.getInput()).append(";")
-                    .append(verificare.getOutput()).append(";");
-        });
-        return verificariBuilder.substring(0, verificariBuilder.length() - 1);
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void scriereInFisier() {
-        try {
-            try (FileWriter fisierProbleme = new FileWriter("Subiecte/Probleme.txt", true);
-                    PrintWriter out = new PrintWriter(fisierProbleme)) {
-                out.println("Denumire: " + this.denumireSubiect);
-                out.println("Cerinta: " + this.cerintaSubiect);
-                String functiiString = convertFunctiiToString();
-                out.println("Functii: ");
-                out.println(functiiString);
-                out.println("Verificari: ");
-                String verificariO = convertVerificariToString();
-                out.println(verificariO);
-                out.println("Finish");
+    public String getAutor() {
+        return autor;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public int nrFunctiiExistente(String input) {
+        int nrFunctii = 0;
+        for (Functie functie : functii) {
+            if (input.contains(functie.getDenumire())) {
+                if (functie.getTipReturnat().equals("")
+                        || input.contains(functie.getTipReturnat() + " " + functie.getDenumire())) {
+                    nrFunctii++;
+                }
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Subiect.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return nrFunctii;
     }
 
-    public void citireDinFisier() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("Subiecte/Probleme.txt"))) {
-            StringBuilder readBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                readBuilder.append(line).append("\n");
+    public String verificareOutput(String inputFile, String sourceFile, Consola consola, String userCode) {
+        String rezultat;
+        String raspuns = "";
+        int nrVerificariCorecte = 0;
+        for (VerificareRezultat verificare : verificari) {
+            try (PrintWriter writer = new PrintWriter(new File(inputFile))) {
+                writer.print(verificare.getInput());
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
             }
-            String[] rezultat = readBuilder.substring(0, readBuilder.length() - 1).split("Finish");
-            System.out.println(rezultat);
-        } catch (IOException ex) {
-            Logger.getLogger(Subiect.class.getName()).log(Level.SEVERE, null, ex);
+            consola.compile(userCode, sourceFile);
+            rezultat = consola.result(sourceFile);
+            if (rezultat.equals(verificare.getOutput())) {
+                raspuns += "Pentru: " + verificare.getInput() + " avem raspuns corect: " + verificare.getOutput() + "\n";
+                nrVerificariCorecte++;
+            } else {
+                raspuns += "Pentru: " + verificare.getInput() + " avem: " + rezultat + " in loc de: " + verificare.getOutput() + "\n";
+            }
         }
+        raspuns += "Total verificari corecte: " + nrVerificariCorecte + " din " + verificari.size();
+        return raspuns;
     }
 
 }

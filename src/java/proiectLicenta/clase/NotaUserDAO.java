@@ -46,20 +46,21 @@ public class NotaUserDAO {
         return noteStudenti;
     }
 
-    public synchronized int inserareNotaProfesor(int idUser, int nota_profesor, String denumire_test) {
+    public synchronized int inserareNotaProfesor(NotaUser nota) {
         int i = -1;
         try {
             st = bd.getStatement();
-            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + idUser;
+            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + nota.getUserId();
 
             ResultSet rs = st.executeQuery(selectCommand);
 
             if (rs.next()) {
-                String updateCommand = "UPDATE NOTA SET nota_profesor=" + nota_profesor + " WHERE iduser=" + idUser;
+                String updateCommand = "UPDATE NOTA SET nota_profesor=" + nota.getNotaProfesor() 
+                        + " WHERE iduser=" + nota.getUserId();
                 st.executeUpdate(updateCommand);
             } else {
-                String insertCommand = "INSERT INTO NOTA(nota_profesor, denumire_test) VALUES ("
-                        + nota_profesor + ",'" + denumire_test + "'" + ")";
+                String insertCommand = "INSERT INTO NOTA(iduser, nota_profesor, denumire_test) VALUES ("
+                        + nota.getUserId() + "," + nota.getNotaProfesor() + ",'" + nota.getDenumireTest() + "'" + ")";
                 st.executeUpdate(insertCommand);
             }
 
@@ -71,20 +72,23 @@ public class NotaUserDAO {
         return i;
     }
 
-    public synchronized int inserareNotaAplicatie(int idUser, int nota_aplicatie, String denumire_test) {
+    public synchronized int inserareNotaAplicatie(NotaUser nota) {
         int i = -1;
         try {
             st = bd.getStatement();
-            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + idUser;
+            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + nota.getUserId();
 
             ResultSet rs = st.executeQuery(selectCommand);
 
             if (rs.next()) {
-                String updateCommand = "UPDATE NOTA SET nota_aplicatie=" + nota_aplicatie + " WHERE iduser=" + idUser;
+                String updateCommand = "UPDATE NOTA SET nota_aplicatie=" + nota.getNotaAplicatie() 
+                        + " AND raspuns_aplicatie='" + nota.getRaspunsAplicatie() + "'"
+                        + " WHERE iduser=" + nota.getUserId();
                 st.executeUpdate(updateCommand);
             } else {
-                String insertCommand = "INSERT INTO NOTA(nota_aplicatie) VALUES ("
-                        + nota_aplicatie + ",'" + denumire_test + "'" + ")";
+                String insertCommand = "INSERT INTO NOTA(iduser, nota_aplicatie, denumire_test, raspuns_aplicatie) VALUES ("
+                        + nota.getUserId() + nota.getNotaAplicatie() 
+                        + ",'" + nota.getDenumireTest() + "'" + nota.getRaspunsAplicatie() + "'" + ")";
                 st.executeUpdate(insertCommand);
             }
 
@@ -95,8 +99,6 @@ public class NotaUserDAO {
         }
         return i;
     }
-
-    //TO DO: introducere nota, denumire test. inserareNotaProfesor, inserareNotaAplicatie, idUser
 
     public void closeConnection() {
         if (bd != null) {

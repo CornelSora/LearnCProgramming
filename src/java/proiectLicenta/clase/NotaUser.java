@@ -1,8 +1,9 @@
 package proiectLicenta.clase;
 
 public class NotaUser {
-    
+
     private int notaAplicatie;
+    private String raspunsAplicatie;
     private int notaProfesor;
     private int userId;
     private String denumireTest;
@@ -38,5 +39,12 @@ public class NotaUser {
     public void setDenumireTest(String denumireTest) {
         this.denumireTest = denumireTest;
     }
-    
+
+    public String getRaspunsAplicatie() {
+        return raspunsAplicatie;
+    }
+
+    public void setRaspunsAplicatie(String raspunsAplicatie) {
+        this.raspunsAplicatie = raspunsAplicatie;
+    }
 }

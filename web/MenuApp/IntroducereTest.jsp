@@ -29,6 +29,14 @@
                     <div class="panel-footer row">
                         <div class="col-lg-12">
                             <form action="../testareAutomataDate" method="POST">
+                                <div class="form-group" >
+                                    <label for="tipUtil">Tip problema:</label>
+                                    <select class="form-control" id="tipProblema" name="tipProblema">
+                                        <option>Test</option>
+                                        <option>Tema</option>
+                                        <option>Exercitiu(pentru orice tip de utilizator)</option>
+                                    </select>
+                                </div> <br/>
                                 <div class="form-group">
                                     <label for="denumireProbelma">Denumire: </label>
                                     <input id="denumireProblema" name="denumireProblema" class="form-control" placeholder="Denumirea problemei"/>
@@ -70,10 +78,10 @@
         <script src="../js/index.js"></script>
         <script src="../js/createTestHelper.js"></script>
         <script>
-            $("#menu-toggle").click(function (e) {
-                e.preventDefault();
-                $("#wrapper").toggleClass("toggled");
-            });
+                                        $("#menu-toggle").click(function (e) {
+                                            e.preventDefault();
+                                            $("#wrapper").toggleClass("toggled");
+                                        });
         </script>
     </body>
 </html>

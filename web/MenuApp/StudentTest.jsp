@@ -1,6 +1,11 @@
+<%-- 
+    Document   : StudentTest
+    Created on : Apr 6, 2017, 12:44:43 AM
+    Author     : Cornel
+--%>
+
 <%@page import="proiectLicenta.clase.NotaUserDAO"%>
 <%@page import="proiectLicenta.clase.NotaUser"%>
-<%@page import="proiectLicenta.clase.Functie"%>
 <%@page import="proiectLicenta.clase.VerificareRezultat"%>
 <%@page import="proiectLicenta.clase.ListaProbleme"%>
 <%@page import="proiectLicenta.clase.Subiect"%>
@@ -25,27 +30,9 @@
     } else {
 %>
 
-<!--setare test curent-->
 <%
-    String idTest = request.getParameter("id");
-    session.setAttribute("id", idTest);
-    Subiect subiect = null;
-    if (idTest != null && !idTest.equals("no")) {
-        if (idTest != null) {
-            subiect = new Subiect();
-            subiect = ListaProbleme.getListaProblemeExercitiu().get(Integer.parseInt(idTest));
-            session.setAttribute("testCurent", subiect);
-        } else {
-            subiect = (Subiect) session.getAttribute("testCurent");
-        }
-    }
-%>
-
-<!--initializare date, verificare cerere, rulare cerere -->
-<%
-    Resources resurse = new Resources();
     String userPath = session.getAttribute("userPath").toString();
-    String programRezultat = resurse.getProgramRezultat();
+    session.setAttribute("id", "");
     String fileName = null;
     User userActual = null;
     UserDAO userDAO = null;
@@ -67,6 +54,31 @@
             userDAO.closeConnection();
         }
     }
+%>
+<!--setare test curent-->
+<%
+    Subiect subiect = null;
+    subiect = new Subiect();
+    for (Subiect s : ListaProbleme.getTeste()) {
+        String profesor = s.getAutor();
+        if (profesor != null
+                && profesor.equals(userActual.getProfesor())) {
+            subiect = new Subiect();
+            subiect.setDenumireSubiect(s.getDenumireSubiect());
+            subiect.setCerintaSubiect(s.getCerintaSubiect());
+            subiect.setFunctii(s.getFunctii());
+            subiect.setVerificari(s.getVerificari());
+            break;
+        }
+    };
+
+    session.setAttribute("testCurent", subiect);
+
+%>
+
+<!--initializare date, verificare cerere, rulare cerere -->
+<%    Resources resurse = new Resources();
+    String programRezultat = "";
     resurse.setFileName(fileName);
     programRezultat = resurse.getProgramRezultat();
 
@@ -92,27 +104,44 @@
                 c.scriereFisier(programRezultat, fileName);
             } else if (button.equals("Stop")) {
                 if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
-                    Runtime.getRuntime().exec("taskkill /F /IM " + userActual.getUsername() + ".exe");
+                    Runtime.getRuntime().exec("taskkill /F /IM " + fileName + ".exe");
                 } else {
-                    Runtime.getRuntime().exec("kill -9 " + userActual.getUsername());
+                    Runtime.getRuntime().exec("kill -9 " + fileName);
                 }
-            } else if (button.equals("Verificare") && !idTest.equals("no")) {
-                resC = c.compile(programRezultat, fileName);
-                if (resC.compareTo("Compilation successful !!!") == 0) {
-                    resT = c.result(fileName);
-                    int nrFunctiiCorecte = subiect.nrFunctiiExistente(programRezultat);
-                    rezultatVerificare += "Nr. functii corecte: " + nrFunctiiCorecte + " din " + subiect.getFunctii().size() + "\n";
-                    String raspunsVerif = subiect.verificareOutput(userPath + "input.txt", fileName, c, programRezultat);
-                    rezultatVerificare += raspunsVerif + "\n";
-                    NotaUser notaUser = new NotaUser();
-                    notaUser.setUserId(userActual.getId());
-                    notaUser.setDenumireTest(subiect.getDenumireSubiect());
-                    notaUser.setRaspunsAplicatie(rezultatVerificare);
-                    NotaUserDAO notaUserDAO = new NotaUserDAO();
-                    notaUserDAO.inserareNotaAplicatie(notaUser);
-                    notaUserDAO.closeConnection();
+            } else if (button.equals("Finish")) {
+                String finishPath;
+                if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
+                    finishPath = fileName + "Finish.c";
                 } else {
-                    resT = "Rezolvati mai intai erorile de compilare!";
+                    finishPath = fileName + "Finish.c";
+                }
+                try (PrintWriter pw = new PrintWriter(new File(finishPath))) {
+                    pw.write(programRezultat);
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
+                response.sendRedirect("logout.jsp");
+            } else if (button.equals("Verificare") && subiect != null) {
+                try {
+                    resC = c.compile(programRezultat, fileName);
+                    if (resC.compareTo("Compilation successful !!!") == 0) {
+                        resT = c.result(fileName);
+                        int nrFunctiiCorecte = subiect.nrFunctiiExistente(programRezultat);
+                        rezultatVerificare += "Nr. functii corecte: " + nrFunctiiCorecte + " din " + subiect.getFunctii().size() + "\n";
+                        String raspunsVerif = subiect.verificareOutput(userPath + "input.txt", fileName, c, programRezultat);
+                        rezultatVerificare += raspunsVerif + "\n";
+                        NotaUser notaUser = new NotaUser();
+                        notaUser.setUserId(userActual.getId());
+                        notaUser.setDenumireTest(subiect.getDenumireSubiect());
+                        notaUser.setRaspunsAplicatie(rezultatVerificare);
+                        NotaUserDAO notaUserDAO = new NotaUserDAO();
+                        notaUserDAO.inserareNotaAplicatie(notaUser);
+                        notaUserDAO.closeConnection();
+                    } else {
+                        resT = "Rezolvati mai intai erorile de compilare!";
+                    }
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
                 }
             }
         }
@@ -126,8 +155,7 @@
     }
 %>
 
-<%
-    int year, month, day, hours, minutes, seconds;
+<%    int year, month, day, hours, minutes, seconds;
     if (session.getAttribute("testStarted") == null) {
         Calendar calendar = new GregorianCalendar();
         session.setAttribute("testStarted", calendar);
@@ -148,21 +176,29 @@
         <link href="../css/simple-sidebar.css" rel="stylesheet">
         <link href="../css/consoleCustomStyle.css" rel="stylesheet">
         <link href="../css/codemirror.css" rel="stylesheet" type="text/css" >
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css" >
         <link href="../css/consoleCustomStyle.css" rel="stylesheet">
         <link rel="stylesheet" href="http://codemirror.net/theme/3024-night.css">
         <script type="text/javascript" src="../js/codemirror.js"></script>
         <script type="text/javascript" src="../js/DesignCookies.js"></script>
         <script type="text/javascript" src="../js/validate.js"></script>
+        <script src="../js/jquery.js"></script>
         <script type="text/javascript" src="../js/timer.js"></script>
-        <script type="text/javascript" src="../js/jquery.js"></script>
         <script src="../js/bootstrap.min.js"></script>
         <script src="https://codemirror.net/addon/fold/foldcode.js"></script>
     </head>
     <body>
         <div id="wrapper">
             <!-- Sidebar -->
-            <jsp:include page="menuBarConsole.jsp" />
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-brand">
+                        <a href='menu.jsp'>
+                            Learn C Programming
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <!-- /#sidebar-wrapper -->
             <button class="btn btn-default" id="menu-toggle" style="background-color: #D0D0D0">
                 <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
@@ -189,7 +225,7 @@
             %>
 
             <h4 style="float: right; width: 15%">
-                Username: <%out.print(userActual.getUsername()); %>
+                Username: <%out.print(userActual.getUsername());%>
             </h4>
 
             <!-- Page Content -->   
@@ -197,27 +233,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
-                            <%if (idTest != null && !idTest.equals("no")) {
-                            %>
                             <div class="row" id="Cerinta" style="display: none">
-                                <h2>Numele testului : <% out.println(subiect.getDenumireSubiect());%></h2>
+                                <h2>Numele testului : <%=subiect.getDenumireSubiect()%></h2>
                                 <h3>Cerinta: </h3>
-                                <ul><li><%=subiect.getCerintaSubiect()%></li></ul>
-                                <h3>Functii</h3>
-                                <table class="table">
-                                    <thead>
-                                    <th>Denumire</th>
-                                    <th>Tip returnat</th>
-                                    </thead>
-                                    <% if (subiect != null) {
-                                            for (Functie functie : subiect.getFunctii()) {
-                                                out.print("<tr>");
-                                                out.print("<td>" + functie.getDenumire() + "</td>");
-                                                out.print("<td>" + functie.getTipReturnat() + "</td>");
-                                                out.print("</tr>");
-                                            }
-                                        }%>
-                                </table>
+                                <ol><li><%=subiect.getCerintaSubiect()%></li></ol>
                                 <h3>Exemplu</h3>
                                 <table class="table">
                                     <thead>
@@ -225,16 +244,17 @@
                                     <th>output</th>
                                     </thead>
                                     <tbody>
-                                        <% for (VerificareRezultat verificare : subiect.getVerificari()) {
-                                                out.print("<tr>");
-                                                out.print("<td>" + verificare.getInput() + "</td>");
-                                                out.print("<td>" + verificare.getOutput() + "</td>");
-                                                out.print("</tr>");
-                                            } %>
+                                        <% if (subiect != null && subiect.getVerificari() != null) {
+                                                for (VerificareRezultat verificare : subiect.getVerificari()) {
+                                                    out.print("<tr>");
+                                                    out.print("<td>" + verificare.getInput() + "</td>");
+                                                    out.print("<td>" + verificare.getOutput() + "</td>");
+                                                    out.print("</tr>");
+                                                }
+                                            }%>
                                     </tbody>
                                 </table>
                             </div>
-                            <% }%>
                             <div class="panel-footer row">
                                 <%@include file="help.html" %>
                                 <div class="btn-group btn-group-sm">
@@ -256,7 +276,7 @@
                                 </div>
                             </div>
 
-                            <form action="ConsoleRun.jsp?id=<%=idTest%>" name="frm" method="POST">
+                            <form action="StudentTest.jsp" name="frm" method="POST">
                                 <div class="panel-footer row">
                                     <textarea name="console" id="console"><%out.print(programRezultat);%></textarea>
                                 </div>
@@ -272,6 +292,9 @@
                                         <button type="submit" id="btnStop" name="button" class="btn btn-primary" value="Stop" 
                                                 style="margin-right: 5px"
                                                 data-toggle="tooltip" data-placement="bottom" title="CTRL + P">Stop process</button>
+                                        <button type="submit" id="btnFinish" name="button" class="btn btn-primary" value="Finish" 
+                                                style="margin-right: 5px"
+                                                data-toggle="tooltip" data-placement="bottom" title="Finish">Finish</button>
                                         <button type="submit" id="btnVerificareCod" name="button" class="btn btn-primary" value="Verificare"
                                                 style="margin-right: 5px"
                                                 data-toggle="tooltip" data-placement="bottom" 
@@ -297,15 +320,13 @@
 
                             <% if (button != null && (button.equals("Run") || button.equals("Verificare"))) { %>
                             <div class="panel-footer row" style="margin-top: -20px;">
-                                <textarea name="consoleRes" id ="consoleRes" class="tab-pane fade" style="display: none;"><% out.println(resC);%>Output:<%out.println("\n"
+                                <textarea name = "consoleRes" id = "consoleRes" class="result"><% out.println(resC);%>Output:<%out.println("\n"
                                             + resT);
-                                    if (!idTest.equals("no") && button.equals("Verificare")) {
+                                    if (button.equals("Verificare")) {
                                         out.println("Rezultate verificari: ");
                                         out.println(rezultatVerificare);
-                                    }%>
-                                </textarea>
-
-                                <textarea name="consoleRes2" id ="consoleRes2" class="tab-pane fade">
+                                    }
+                                    %>
                                 </textarea>
                             </div>
                             <% } else if (button != null && button.equals("Save")) {
@@ -324,18 +345,19 @@
         <script type="text/javascript" src="../js/keyEvents.js"></script>
         <script>
                                                         $(document).ready(function () {
-
+                                                            $('[data-toggle="tooltip"]').tooltip();
                                                             $("#menu-toggle").click(function (e) {
                                                                 e.preventDefault();
                                                                 $("#wrapper").toggleClass("toggled");
                                                             });
-                                                            $('[data-toggle="tooltip"]').tooltip();
-
                                                             var progress = $("#progressBar")[0];
                                                             makeProgressBarVisible = () => {
                                                                 progress.style.display = 'block';
                                                             };
 
+                                                            $("#btnFinish").onclick = () => {
+                                                                alert("Test finalizat cu succes!");
+                                                            };
                                                         });
         </script>
     </body>

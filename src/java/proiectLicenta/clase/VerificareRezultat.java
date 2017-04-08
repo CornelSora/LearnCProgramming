@@ -20,5 +20,9 @@ public class VerificareRezultat {
     public void setOutput(String output) {
         this.output = output;
     }
-    
+
+    public boolean isCorect(String output) {
+        return this.output.equals(output);
+    }
+
 }

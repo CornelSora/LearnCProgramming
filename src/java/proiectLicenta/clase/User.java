@@ -10,6 +10,7 @@ public class User {
     private String parola;
     private String email;
     private TipUtilizator tip;
+    private String profesor;
     
     public User() {
     }
@@ -60,6 +61,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getProfesor() {
+        return profesor;
+    }
+
+    public void setProfesor(String profesor) {
+        this.profesor = profesor;
     }
     
     public void setTip(String tip) {

@@ -23,6 +23,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="js/validate.js"></script>
+        <script src="js/jquery.js"></script>
         <title>Learn C Programming</title>
     </head>
     <body>
@@ -53,10 +54,11 @@
                 <center><h3>Register</h3></center>
                 <input type="text" id="numeId" name="Nume" placeholder="Nume" autocomplete="off"/>
                 <input type="text" id="prenumeId" name="Prenume" placeholder="Prenume"/>
-                <input type="text" id="unameId" name="uname" placeholder="Username"/>
-                <input type="password" id="passId" name="password" placeholder="Parola"/>
-                <input type="password" id="passId2" name="password2" placeholder="Parola"/>
+                <input type="text" id="unameId" name="uname" placeholder="Username*"/>
+                <input type="password" id="passId" name="password" placeholder="Parola*"/>
+                <input type="password" id="passId2" name="password2" placeholder="Parola*"/>
                 <input type="email" id="emailId" name="email" placeholder="Email address"/>
+                <input type="text" id="coordonatorId" name="coordonator" placeholder="Profesor coordonator"/>
                 <div class="form-group" >
                     <label for="tipUtil">Tip utilizator:</label>
                     <select class="form-control" id="tipUtil" name="tipUtil">

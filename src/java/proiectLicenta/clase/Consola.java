@@ -3,8 +3,6 @@ package proiectLicenta.clase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -55,7 +53,7 @@ public class Consola {
         getResources();
         String log = "";
         try {
-            String s = null;
+            String s;
             scriereFisier(info, denumireFisier);
             System.out.println("Working Directory = "
                     + System.getProperty("user.dir"));
@@ -106,7 +104,7 @@ public class Consola {
         getResources();
         String log = "";
         try {
-            String s = null;
+            String s;
             String fileNameReal = denumireFisier.substring(denumireFisier.lastIndexOf("\\") + 1);
 
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
@@ -140,7 +138,7 @@ public class Consola {
         return log;
     }
 
-    public synchronized String result(String denumireFisier) throws IOException {
+    public synchronized String result(String denumireFisier) {
         StringBuilder sb = new StringBuilder();
         try {
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
@@ -151,8 +149,7 @@ public class Consola {
         
             BufferedReader bf = new BufferedReader(
                     new InputStreamReader(finali.getInputStream()));
-            String line = null;
-            int finishCode = finali.waitFor();
+            String line;
             
             while ((line = bf.readLine()) != null) {
                 sb.append(line).append("\n");
@@ -173,7 +170,7 @@ public class Consola {
             if (!"".equals(sb.toString())) {
                 return sb.toString().substring(0, sb.length() - 1);
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println(ex.toString());
             return ex.toString();
         } catch (Error e) {

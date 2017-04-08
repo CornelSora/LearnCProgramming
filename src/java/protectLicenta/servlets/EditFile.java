@@ -14,31 +14,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import proiectLicenta.clase.CodeTest;
 import proiectLicenta.clase.FileUserDAO;
 
-/**
- *
- * @author Cornel
- */
 @WebServlet(name = "EditFile", urlPatterns = {"/EditFile"})
 public class EditFile extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        CodeTest codeTest = (CodeTest) session.getAttribute("testCurent");
-        response.sendRedirect("/ProiectLicenta/MenuApp/ConsoleRun.jsp?id=" + codeTest.getId());
+        if (session.getAttribute("id") != null && !session.getAttribute("id").toString().equals("")) {
+            String id = session.getAttribute("id").toString();
+            response.sendRedirect("/ProiectLicenta/MenuApp/ConsoleRun.jsp?id=" + id);
+        } else {
+            response.sendRedirect("/ProiectLicenta/MenuApp/StudentTest.jsp");
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -106,9 +96,9 @@ public class EditFile extends HttpServlet {
             } catch (Exception ex) {
                 System.out.println(ex.toString());
             } finally {
-                 if (fileUserDAO != null) {
-                     fileUserDAO.closeConnection();
-                 }
+                if (fileUserDAO != null) {
+                    fileUserDAO.closeConnection();
+                }
             }
         }
         processRequest(request, response);

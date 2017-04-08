@@ -43,7 +43,7 @@ $(document).on('keydown', function (e) {
     }
 });
 
-/*$(document).on('keydown', function (e) {
+$(document).on('keydown', function (e) {
     if (e.ctrlKey && e.which === 86) {
         if (!ctrlCopyPressed) {
             e.preventDefault();
@@ -51,7 +51,7 @@ $(document).on('keydown', function (e) {
         }
     }
 });
-*/
+
 $(window).blur(function () {
     ctrlCopyPressed = false;
 });

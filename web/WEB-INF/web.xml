@@ -9,20 +9,20 @@
     </context-param>
     <servlet>
         <servlet-name>console</servlet-name>
-        <jsp-file>/MenuApp/console.jsp</jsp-file>
+        <jsp-file>/MenuApp/ConsoleRun.jsp</jsp-file>
         <!-- Your JSP. Must begin with '/' -->
     </servlet>
 
     <servlet-mapping>
         <servlet-name>console</servlet-name>
-        <url-pattern>/test</url-pattern>
+        <url-pattern>/problema</url-pattern>
         <!-- Any URL you want here -->
     </servlet-mapping>
     
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>A JSP page</web-resource-name>
-            <url-pattern>/MenuApp/ConsoleRun.jsp</url-pattern>
+            <url-pattern>/MenuApp/StudentTest.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>yourrole</role-name>

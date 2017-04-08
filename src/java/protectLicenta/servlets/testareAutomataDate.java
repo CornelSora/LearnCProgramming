@@ -9,9 +9,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import proiectLicenta.clase.Functie;
+import proiectLicenta.clase.ListaProbleme;
 import proiectLicenta.clase.Subiect;
 import proiectLicenta.clase.SubiectDAO;
+import proiectLicenta.clase.User;
 import proiectLicenta.clase.VerificareRezultat;
 
 @WebServlet(name = "testareAutomataDate", urlPatterns = {"/testareAutomataDate"})
@@ -21,6 +24,8 @@ public class testareAutomataDate extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            out.println("Se incarca datele...");
+            response.sendRedirect("MenuApp/IntroducereTest.jsp");
         }
     }
 
@@ -35,6 +40,7 @@ public class testareAutomataDate extends HttpServlet {
             throws ServletException, IOException {
         String denumireProblema = request.getParameter("denumireProblema");
         String cerintaProblema = request.getParameter("cerintaProblema");
+        String tipProblema = request.getParameter("tipProblema");
         List<Functie> functii = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             if (request.getParameter("denumireFunctie" + i) != null) {
@@ -63,16 +69,34 @@ public class testareAutomataDate extends HttpServlet {
                 i = 20;
             }
         }
+        HttpSession session = request.getSession();
+        String profesorUName = session.getAttribute("userPath").toString();
 
         Subiect subiect = new Subiect();
         subiect.setDenumireSubiect(denumireProblema);
         subiect.setCerintaSubiect(cerintaProblema);
         subiect.setFunctii(functii);
         subiect.setVerificari(verificareRezultate);
-
+        subiect.setAutor(profesorUName);
         try {
-
             SubiectDAO subiectDAO = new SubiectDAO();
+            if (tipProblema.toLowerCase().equals("test")) {
+                for (Subiect s : ListaProbleme.getTeste()) {
+                    if (s.getAutor().toLowerCase().equals(profesorUName)
+                            && s.getDenumireSubiect().toLowerCase().equals("test")) {
+                        ListaProbleme.getTeste().remove(s);
+                    }
+                }
+                subiect.setDenumireSubiect("test");
+                ListaProbleme.getTeste().add(subiect);
+            } else {
+                if (tipProblema.toLowerCase().equals("tema")) {
+                    ListaProbleme.getListaProblemeProfesori().add(subiect);
+                } else {
+                    ListaProbleme.getListaProblemeExercitiu().add(subiect);
+                    subiect.setAutor("");
+                }
+            }
             subiectDAO.inserareSubiect(subiect);
             subiectDAO.closeConnection();
         } catch (Exception ex) {

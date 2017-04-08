@@ -22,6 +22,7 @@ and open the template in the editor.
     </head>
 
     <body>
+        <input type="button" class="btn btn-info" id="btnAfisare" onclick="afisareCerinta()" value="Afisare cerinta" />
 
         <div class="container" id="popup">
             <button class="btn btn-info" id="btnInfo" data-toggle="popover" title="Indicatii" data-html="true" data-placement="left" 
@@ -43,6 +44,18 @@ and open the template in the editor.
                 setTimeout(function () {
                     popover.click();
                 }, 700);
+            }
+
+            function afisareCerinta() {
+                var cerinta = document.getElementById("Cerinta");
+                var btnAfisare = document.getElementById("btnAfisare");
+                if (cerinta.style.display === "none") {
+                    btnAfisare.value = "Ascunde cerinta";
+                    cerinta.style.display = "block";
+                } else {
+                    btnAfisare.value = "Afisare cerinta";
+                    cerinta.style.display = "none";
+                }
             }
         </script>
     </body>

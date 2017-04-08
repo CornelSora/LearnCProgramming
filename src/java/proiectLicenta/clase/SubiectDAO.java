@@ -24,30 +24,53 @@ public class SubiectDAO {
         }
     }
 
-    public synchronized List<NotaUser> extragereSubiecte() {
-        List<NotaUser> noteStudenti = new ArrayList<>();
+    public synchronized List<Subiect> extragereSubiecte() {
+        List<Subiect> subiecte = new ArrayList<>();
         try {
             st = bd.getStatement();
-            String selectCommand = "SELECT * FROM NOTA";
+            String selectCommand = "SELECT * FROM PROBLEMA";
             ResultSet rs = st.executeQuery(selectCommand);
             while (rs.next()) {
-                int idUser = rs.getInt(1);
-                int notaProfesor = rs.getInt(2);
-                int notaAplicatie = rs.getInt(3);
-                String denumireTest = rs.getString(4);
-                NotaUser notaUser = new NotaUser();
-                notaUser.setUserId(idUser);
-                notaUser.setNotaProfesor(notaProfesor);
-                notaUser.setNotaAplicatie(notaAplicatie);
-                notaUser.setDenumireTest(denumireTest);
-                noteStudenti.add(notaUser);
+                int idProblema = rs.getInt(1);
+                String denumire = rs.getString(2);
+                String cerinta = rs.getString(3);
+                String autor = rs.getString(4);
+                List<Functie> functii = new ArrayList<>();
+                String selectFunctieCommand = "SELECT * FROM FUNCTIE WHERE IDPROBLEMA=" + idProblema;
+                Statement newSt = bd.getCon().createStatement();
+                ResultSet rsFunctii = newSt.executeQuery(selectFunctieCommand);
+                while (rsFunctii.next()) {
+                    Functie functie = new Functie();
+                    functie.setDenumire(rsFunctii.getString(2));
+                    functie.setTipReturnat(rsFunctii.getString(3));
+                    functii.add(functie);
+                }
+                
+                List<VerificareRezultat> verificari = new ArrayList<>();
+                String selectVerificariCommand = "SELECT * FROM VERIFICARI WHERE IDPROBLEMA=" + idProblema;
+                ResultSet rsVerificari = newSt.executeQuery(selectVerificariCommand);
+                while(rsVerificari.next()) {
+                    VerificareRezultat verif = new VerificareRezultat();
+                    verif.setInput(rsVerificari.getString(2));
+                    verif.setOutput(rsVerificari.getString(3));
+                    verificari.add(verif);
+                }
+                newSt.close();
+                Subiect subiect = new Subiect();
+                subiect.setDenumireSubiect(denumire);
+                subiect.setCerintaSubiect(cerinta);
+                subiect.setFunctii(functii);
+                subiect.setVerificari(verificari);
+                subiect.setAutor(autor);
+                //subiect.setId(subiecte.size());
+                subiecte.add(subiect);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NotaUserDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             bd.releaseStatement();
         }
-        return noteStudenti;
+        return subiecte;
     }
 
     public synchronized void inserareSubiect(Subiect subiect) {
@@ -59,8 +82,9 @@ public class SubiectDAO {
             if (rs.next()) {
                 id = rs.getInt(1) + 1;
             }
-            String insertProblemaCommand = "INSERT INTO PROBLEMA(IDPROBLEMA, DENUMIRE, CERINTA) VALUES ("
-                    + id + ",'" + subiect.getDenumireSubiect() + "','" + subiect.getCerintaSubiect() + "'" + ")";
+            String insertProblemaCommand = "INSERT INTO PROBLEMA(IDPROBLEMA, DENUMIRE, CERINTA, AUTOR) VALUES ("
+                    + id + ",'" + subiect.getDenumireSubiect() + "','" + subiect.getCerintaSubiect()
+                    + "','" + subiect.getAutor()+ "'" + ")";
             st.executeUpdate(insertProblemaCommand);
             String insertFunctieCommand;
 
@@ -82,31 +106,6 @@ public class SubiectDAO {
         } finally {
             bd.releaseStatement();
         }
-    }
-
-    public synchronized int inserareNotaAplicatie(int idUser, int nota_aplicatie, String denumire_test) {
-        int i = -1;
-        try {
-            st = bd.getStatement();
-            String selectCommand = "SELECT * FROM NOTA WHERE iduser=" + idUser;
-
-            ResultSet rs = st.executeQuery(selectCommand);
-
-            if (rs.next()) {
-                String updateCommand = "UPDATE NOTA SET nota_aplicatie=" + nota_aplicatie + " WHERE iduser=" + idUser;
-                st.executeUpdate(updateCommand);
-            } else {
-                String insertCommand = "INSERT INTO NOTA(nota_aplicatie) VALUES ("
-                        + nota_aplicatie + ",'" + denumire_test + "'" + ")";
-                st.executeUpdate(insertCommand);
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(NotaUserDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            bd.releaseStatement();
-        }
-        return i;
     }
 
     public void closeConnection() {

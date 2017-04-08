@@ -1,3 +1,5 @@
+<%@page import="proiectLicenta.clase.NotaUserDAO"%>
+<%@page import="proiectLicenta.clase.NotaUser"%>
 <%@page import="proiectLicenta.clase.FileUserDAO"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
@@ -17,10 +19,11 @@
     User studentActual = null;
     List<User> users = null;
     String studentName = request.getParameter("student");
-
+    String profesor = session.getAttribute("userPath").toString();
+    
     UserDAO userDAO = new UserDAO();
     try {
-        users = userDAO.getAllStudents();
+        users = userDAO.getAllStudents(profesor);
         for (User user : users) {
             if (user.getUsername().toLowerCase().equals(studentName)) {
                 studentActual = new User();
@@ -69,6 +72,15 @@
             } else {
                 Runtime.getRuntime().exec("kill -9 " + filePath);
             }
+        } else if (button.equals("nota")) {
+            int nota = Integer.parseInt(request.getParameter("nota"));
+            NotaUser notaUser = new NotaUser();
+            notaUser.setDenumireTest("test");
+            notaUser.setNotaProfesor(nota);
+            notaUser.setUserId(studentActual.getId());
+            NotaUserDAO notaUserDAO = new NotaUserDAO();
+            notaUserDAO.inserareNotaProfesor(notaUser);
+            notaUserDAO.closeConnection();
         }
     }
     if (studentName != null) {
@@ -98,10 +110,11 @@
         }
     }
 
-    FileUserDAO fileUserDAO = new FileUserDAO();
+    FileUserDAO fileUserDAO = null;
     List<String> listaFisiere = null;
     Map<String, String> fisiere = null;
     if (studentName != null) {
+        fileUserDAO = new FileUserDAO();
         listaFisiere = fileUserDAO.getFilesById(studentActual.getId());
         fileUserDAO.closeConnection();
         fisiere = new HashMap<>();
@@ -168,7 +181,8 @@
                     </li>
                     <% if (users != null) {
                             int i = 0;
-                            for (User user : users) { %>
+                            for (User user : users) { 
+                    %>
                     <li>
                         <a href='SituatieStudenti.jsp?student=<%out.print(user.getUsername());%>' id="student<%=i%>" style="display: block">
                             <%out.println(user.getUsername());%>
@@ -203,13 +217,13 @@
                                     }%>
                             </div>
                             <div class="panel-footer row" style="float: right; margin-right: 10px;">
-                                <form class="form-inline">
+                                <form method="POST" action="SituatieStudenti.jsp" class="form-inline">
                                     <div class="form-group">
                                         <div class="col-xs-8 col-sm-4">
                                             <input type="text" class="form-control" id="nota" placeholder="Nota">
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-success">Submit</button>
+                                    <button type="submit" value="nota" class="btn btn-success">Submit</button>
                                 </form>
                             </div>
                             <div class="panel-footer row">
@@ -254,15 +268,19 @@
                                         </div>
                                     </div>
                                 </form>
-
+                                <% } %>
                                 <div class="form-group" style="width: 10%">
-                                <p>Select a theme: </p>
+                                    <p>Select a theme: </p>
                                     <select class="form-control" onchange="selectTheme()" id="select">
                                         <option value="0" selected>Dark</option>
                                         <option value="1">Default</option>
                                     </select> 
                                 </div>
-                                <form action="SituatieStudenti.jsp?student=<%out.print(studentName);%>" method="POST">
+                                <% String action = "";
+                                    if (studentName != null) {
+                                        action = "?student=" + studentName;
+                                    } %>
+                                <form action="SituatieStudenti.jsp<%=action%>" method="POST">
                                     <div class="panel-footer row">
                                         <textarea name="consolaEvaluare" id="consolaEvaluare"><% if (studentCode != null) {
                                                 out.println(studentCode);
@@ -290,7 +308,6 @@
                         </div>
                     </div>
                 </div>
-                <% } %>
                 </body>
                 <script src="../js/profesor.js"></script>
                 <script>$('[data-toggle="tooltip"]').tooltip();

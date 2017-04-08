@@ -14,7 +14,6 @@
 <br>
 <%
     String userName = request.getParameter("uname");
-    
     String pwd = request.getParameter("password");
     UserDAO userDAO = null;
     User user = null;
@@ -34,9 +33,9 @@
             }
             (new File("Conturi")).mkdir();
             if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                boolean success = (new File("Conturi\\" + userName)).mkdir();
+                (new File("Conturi\\" + userName)).mkdir();
             } else {
-                boolean success = (new File("Conturi/" + userName.toLowerCase())).mkdir();
+                (new File("Conturi/" + userName.toLowerCase())).mkdir();
             }
             response.sendRedirect("../MenuApp/menu.jsp");
         } else {

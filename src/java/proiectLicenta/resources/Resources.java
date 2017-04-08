@@ -15,7 +15,7 @@ public class Resources {
     private String corpProgram;
     private String programRezultat;
     private String fileName;
-
+    
     public String getBibliotecaC() {
         return bibliotecaC;
     }
@@ -43,6 +43,11 @@ public class Resources {
     public String getProgramRezultat() {
         getResource();
         verificareFisier();
+        return programRezultat;
+    }
+    
+    public String getInitialProgram() {
+        getResource();
         return programRezultat;
     }
 
